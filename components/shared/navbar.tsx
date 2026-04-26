@@ -21,7 +21,7 @@ import { useTheme } from "@/components/shared/ThemeProvider";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ email: string } | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
   const pathname = usePathname();
