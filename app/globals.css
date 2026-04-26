@@ -1,188 +1,100 @@
 @import "tailwindcss";
 
-/* ============================= */
-/*        DESIGN TOKENS         */
-/* ============================= */
-
 :root {
-  /* Core UI */
-  --background: 220 20% 97%;
-  --foreground: 222 47% 11%;
+  --background: 36 42% 97%;
+  --foreground: 18 20% 9%;
 
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
+  --card-foreground: 18 20% 10%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
+  --popover-foreground: 18 20% 10%;
 
-  /* Brand */
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 247 57% 49%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 24 95% 53%;
-  --secondary-foreground: 0 0% 100%;
+  --secondary: 35 92% 61%;
+  --secondary-foreground: 20 25% 10%;
 
-  /* States */
-  --muted: 220 14% 96%;
-  --muted-foreground: 220 9% 46%;
+  --muted: 34 22% 93%;
+  --muted-foreground: 22 10% 40%;
 
-  --accent: 221 83% 96%;
-  --accent-foreground: 221 83% 53%;
+  --accent: 249 80% 96%;
+  --accent-foreground: 247 57% 49%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 221 83% 53%;
+  --border: 35 18% 88%;
+  --input: 35 18% 88%;
+  --ring: 247 57% 49%;
 
-  --radius: 0.75rem;
+  --radius: 1rem;
 
-  /* Semantic colors */
-  --success: 142 71% 45%;
-  --warning: 38 92% 50%;
+  --gradient-brand: linear-gradient(145deg, hsl(247 57% 49%), hsl(264 58% 58%));
+  --gradient-surface: linear-gradient(170deg, rgba(255,255,255,.9), rgba(255,255,255,.72));
+  --gradient-hero: radial-gradient(circle at 20% 20%, rgba(125, 116, 255, 0.15), transparent 45%), radial-gradient(circle at 80% 10%, rgba(255, 211, 146, 0.2), transparent 40%);
 
-  /* Gradients */
-  --gradient-hero: linear-gradient(135deg, hsl(221 83% 53%), hsl(250 70% 56%));
-  --gradient-accent: linear-gradient(135deg, hsl(24 95% 53%), hsl(15 90% 50%));
-  --gradient-mesh:
-    radial-gradient(at 40% 20%, hsl(221 83% 53% / 0.08) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsl(250 70% 56% / 0.06) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsl(24 95% 53% / 0.05) 0px, transparent 50%);
-
-  /* Shadows */
-  --shadow-card: 0 1px 3px 0 hsl(222 47% 11% / 0.04);
-  --shadow-hover: 0 20px 40px -12px hsl(221 83% 53% / 0.15);
-  --shadow-glow: 0 0 40px -8px hsl(221 83% 53% / 0.3);
+  --shadow-card: 0 18px 35px -28px rgba(7, 5, 19, 0.45), 0 1px 0 rgba(255, 255, 255, 0.75) inset;
+  --shadow-lift: 0 38px 55px -35px rgba(59, 53, 196, 0.44), 0 4px 20px -10px rgba(26, 22, 80, 0.22);
 }
-
-/* ============================= */
-/*           DARK MODE          */
-/* ============================= */
 
 .dark {
-  --background: 222 47% 6%;
-  --foreground: 210 40% 98%;
-
-  --card: 222 40% 10%;
-  --card-foreground: 210 40% 98%;
-
-  --popover: 222 40% 10%;
-  --popover-foreground: 210 40% 98%;
-
-  --primary: 221 83% 58%;
-  --primary-foreground: 0 0% 100%;
-
-  --secondary: 24 95% 55%;
-  --secondary-foreground: 0 0% 100%;
-
-  --muted: 222 30% 16%;
-  --muted-foreground: 220 10% 60%;
-
-  --accent: 222 30% 16%;
-  --accent-foreground: 221 83% 58%;
-
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 100%;
-
-  --border: 222 25% 18%;
-  --input: 222 25% 18%;
-  --ring: 221 83% 58%;
+  --background: 230 26% 7%;
+  --foreground: 36 23% 96%;
+  --card: 231 21% 11%;
+  --card-foreground: 36 23% 96%;
+  --popover: 231 21% 11%;
+  --popover-foreground: 36 23% 96%;
+  --primary: 247 66% 64%;
+  --secondary: 37 92% 58%;
+  --muted: 230 19% 16%;
+  --muted-foreground: 228 9% 70%;
+  --accent: 230 20% 17%;
+  --accent-foreground: 247 66% 64%;
+  --border: 229 18% 21%;
+  --input: 229 18% 21%;
 }
 
-/* ============================= */
-/*        GLOBAL BASE STYLES    */
-/* ============================= */
+* { border-color: hsl(var(--border)); }
 
-* {
-  border-color: hsl(var(--border));
-}
+html, body { min-height: 100%; }
 
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  background-image: var(--gradient-hero);
+  background-attachment: fixed;
 }
 
-/* ============================= */
-/*        LAYOUT HELPERS        */
-/* ============================= */
+.container { max-width: 1280px; margin: 0 auto; padding-left: 2rem; padding-right: 2rem; }
 
-.container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
-/* ============================= */
-/*        UI UTILITIES          */
-/* ============================= */
-
-/* Glass morphism */
 .glass {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255,255,255,.56);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,.35);
 }
-
 .dark .glass {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
 }
 
-/* Cards */
-.card {
-  background: hsl(var(--card));
+.premium-card {
+  background: var(--gradient-surface);
   border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
   box-shadow: var(--shadow-card);
-  transition: all 0.25s ease;
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+.gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* Focus */
-.focus-ring:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px hsl(var(--ring));
-}
+.text-balance { text-wrap: balance; }
 
-/* Text */
-.text-balance {
-  text-wrap: balance;
-}
-
-/* ============================= */
-/*      HERO BACKGROUND         */
-/* ============================= */
-
-.hero-mesh {
-  background: var(--gradient-mesh);
-}
-
-/* ============================= */
-/*      OPTIONAL ANIMATION      */
-/* ============================= */
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-.float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* hide scrollbar but keep scroll functionality */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

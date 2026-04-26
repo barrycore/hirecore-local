@@ -1,13 +1,10 @@
 
 import { Suspense } from "react";
-import { Search, Section, SlidersHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
 import TaskCard, { TaskCardSkeleton } from "@/components/shared/task-card";
 import EmptyState from "@/components/shared/empty-state";
 import { createClient } from "@/lib/supabase/server";
-import { TASK_CATEGORIES } from "@/lib/utils";
 import type { Task } from "@/types";
-import { cn } from "@/lib/utils";
 import TasksHero from "./TaskHero";
 import SectionDivider from "@/components/shared/section-divider";
 
@@ -90,10 +87,8 @@ function TasksLoading() {
 }
 
 export default function TasksPage({ searchParams }: TasksPageProps) {
-  const activeCategory = searchParams.category || "all";
-
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(95,82,255,0.22),transparent_30%),linear-gradient(180deg,#110f1f_0%,#0c0a16_55%,#0f0d18_100%)] text-white">
 
   <TasksHero searchParams={searchParams} />
 <SectionDivider variant="wave" flip />
