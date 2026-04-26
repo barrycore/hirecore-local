@@ -39,7 +39,7 @@ export default function RootLayout({
         <ThemeProvider>
         <Navbar />
 
-        <main className="relative flex min-h-screen flex-col">
+        <main className="relative flex min-h-screen flex-col bg-transparent">
           {children}
         </main>
 

@@ -1,38 +1,21 @@
-import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { Briefcase, LayoutDashboard, Users, ClipboardList, UserCheck, LogOut, Settings } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
 import AdminLayoutClient from './layout-client'
 
 const adminNavItems = [
-  { href: '/dashboard/admin', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/admin/tasks', label: 'Tasks', icon: ClipboardList },
-  { href: '/dashboard/admin/applications', label: 'Applications', icon: UserCheck },
-  { href: '/dashboard/admin/workforce', label: 'Workforce', icon: Users },
+  { href: '/dashboard/admin', label: 'Overview', iconName: 'layout' as const },
+  { href: '/dashboard/admin/tasks', label: 'Tasks', iconName: 'tasks' as const },
+  { href: '/dashboard/admin/applications', label: 'Applications', iconName: 'applications' as const },
+  { href: '/dashboard/admin/workforce', label: 'Workforce', iconName: 'users' as const },
 ]
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+const demoAdminProfile = {
+  role: 'admin',
+  full_name: 'Kojo Boateng',
+  email: 'ops@hirecore.local',
+}
 
-  if (!user) redirect('/auth/login?redirect=/dashboard/admin')
-
-  const { data: profile } = await supabase
-    .from('users')
-    .select('role, full_name, email')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile || !['admin', 'super_admin'].includes(profile.role)) {
-    redirect('/?error=unauthorized')
-  }
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AdminLayoutClient
-      navItems={adminNavItems}
-      profile={profile}
-      dashboardType="admin"
-    >
+    <AdminLayoutClient navItems={adminNavItems} profile={demoAdminProfile} dashboardType="admin">
       {children}
     </AdminLayoutClient>
   )
