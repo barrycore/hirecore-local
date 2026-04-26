@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Bell, Briefcase, ChevronRight, LogOut, Menu, Search, Sparkles, X } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn, getInitials } from '@/lib/utils'
+import type { LucideIcon } from 'lucide-react'
 
 interface NavItem {
   href: string
@@ -20,15 +21,6 @@ interface AdminLayoutClientProps {
   dashboardType: 'admin' | 'super-admin'
 }
 
-
-const iconMap = {
-  layout: Sparkles,
-  tasks: Briefcase,
-  applications: Bell,
-  users: Search,
-  shield: ChevronRight,
-  admin: Menu,
-} as const
 function SidebarSection({ navItems, pathname, onClose }: { navItems: NavItem[]; pathname: string; onClose: () => void }) {
   return (
     <nav className="space-y-1.5">
@@ -46,7 +38,7 @@ function SidebarSection({ navItems, pathname, onClose }: { navItems: NavItem[]; 
                 : 'text-white/70 hover:bg-white/5 hover:text-white'
             )}
           >
-            {(() => { const Icon = iconMap[item.iconName]; return <Icon className="h-4 w-4" /> })()}
+            <item.icon className="h-4 w-4" />
             <span className="flex-1">{item.label}</span>
             {active ? <ChevronRight className="h-4 w-4 text-violet-200" /> : null}
           </Link>

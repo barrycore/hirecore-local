@@ -1,3 +1,4 @@
+import { ClipboardList, LayoutDashboard, UserCheck, Users } from 'lucide-react'
 import AdminLayoutClient from './layout-client'
 
 const adminNavItems = [

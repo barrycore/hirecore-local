@@ -1,10 +1,11 @@
+import { ClipboardList, LayoutDashboard, Shield, Users } from 'lucide-react'
 import AdminLayoutClient from '../admin/layout-client'
 
 const superAdminNavItems = [
-  { href: '/dashboard/super-admin', label: 'Overview', iconName: 'layout' as const },
-  { href: '/dashboard/super-admin/users', label: 'All Users', iconName: 'users' as const },
-  { href: '/dashboard/super-admin/admins', label: 'Manage Admins', iconName: 'shield' as const },
-  { href: '/dashboard/admin', label: 'Admin Panel', iconName: 'admin' as const },
+  { href: '/dashboard/super-admin', label: 'Overview', icon: LayoutDashboard },
+  { href: '/dashboard/super-admin/users', label: 'All Users', icon: Users },
+  { href: '/dashboard/super-admin/admins', label: 'Manage Admins', icon: Shield },
+  { href: '/dashboard/admin', label: 'Admin Panel', icon: ClipboardList },
 ]
 
 const demoProfile = {
