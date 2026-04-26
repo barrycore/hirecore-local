@@ -11,7 +11,7 @@ import type { LucideIcon } from 'lucide-react'
 interface NavItem {
   href: string
   label: string
-  icon: LucideIcon
+  iconName: 'layout' | 'tasks' | 'applications' | 'users' | 'shield' | 'admin'
 }
 
 interface AdminLayoutClientProps {
