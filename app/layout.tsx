@@ -5,6 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/shared/navbar";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import ConditionalNavbar from "@/components/shared/ConditionalNavbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,20 +31,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="en"
-      className={inter.variable}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary-foreground">
         <ThemeProvider>
-        <Navbar />
+          <ConditionalNavbar />
+          <main className="relative flex min-h-screen flex-col bg-transparent">
+            {children}
+          </main>
 
-        <main className="relative flex min-h-screen flex-col bg-transparent">
-          {children}
-        </main>
-
-        <Toaster />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
