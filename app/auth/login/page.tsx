@@ -115,7 +115,7 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 40, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-md rounded-[2rem] border border-border bg-card/80 p-8 text-card-foreground shadow-2xl backdrop-blur-2xl"
+        className="relative z-10 w-full max-w-md rounded-4xl border border-border bg-card/80 p-8 text-card-foreground shadow-2xl backdrop-blur-2xl"
       >
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">

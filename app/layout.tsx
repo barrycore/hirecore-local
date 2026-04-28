@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/shared/navbar";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import ConditionalNavbar from "@/components/shared/ConditionalNavbar";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,12 +35,14 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary-foreground">
         <ThemeProvider>
-          <ConditionalNavbar />
-          <main className="relative flex min-h-screen flex-col bg-transparent">
-            {children}
-          </main>
+          <AuthProvider>
+            <ConditionalNavbar />
+            <main className="relative flex min-h-screen flex-col bg-transparent">
+              {children}
+            </main>
 
-          <Toaster />
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,185 +1,213 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Menu,
-  X,
-  Briefcase,
   ChevronDown,
-  Sun,
+  LayoutDashboard,
+  LogOut,
+  Menu,
   Moon,
+  Settings,
+  Sun,
+  User,
+  X,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { createClient } from "@/lib/supabase/client";
 import { cn, getInitials } from "@/lib/utils";
 import { useTheme } from "@/components/shared/ThemeProvider";
+import { useAuth } from "@/providers/AuthProvider";
+
+function useOutsideClick<T extends HTMLElement>(
+  ref: React.RefObject<T | null>,
+  handler: () => void,
+  enabled = true,
+) {
+  useEffect(() => {
+    if (!enabled) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (!ref.current || ref.current.contains(target)) return;
+      handler();
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [enabled, handler, ref]);
+}
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ email: string } | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = createClient();
   const { theme, toggleTheme } = useTheme();
+  const { user, authenticated, loading, logout } = useAuth();
+
+  const closeMobileMenu = useCallback(() => setMenuOpen(false), []);
+  const closeUserMenu = useCallback(() => setUserMenuOpen(false), []);
+
+  useOutsideClick(mobileMenuRef, closeMobileMenu, menuOpen);
+  useOutsideClick(userMenuRef, closeUserMenu, userMenuOpen);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
+    handleScroll();
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
+    setMenuOpen(false);
+    setUserMenuOpen(false);
+  }, [pathname]);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    router.push("/");
-  };
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
 
   const navLinks = [
     { href: "/tasks", label: "Browse Tasks" },
     { href: "/apply-workforce", label: "Join Workforce" },
   ];
 
+  const authedLinks = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/profile", label: "Profile", icon: User },
+    { href: "/settings", label: "Settings", icon: Settings },
+  ];
+
   const isActive = (href: string) => pathname === href;
+
+  const userName = user?.fullName || user?.email || "User";
+  const userEmail = user?.email || "";
 
   return (
     <nav
       className={cn(
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+        "fixed left-1/2 top-4 z-50 w-[95%] max-w-7xl -translate-x-1/2 rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
         scrolled
-          ? "bg-background/90 backdrop-blur-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.15)]"
-          : "bg-background/70 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.1)]"
+          ? "glass-nav shadow-[0_18px_45px_rgba(0,0,0,0.16)]"
+          : "glass-nav",
       )}
     >
-      {/* Gloss Layer */}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-b from-white/20 via-transparent to-transparent opacity-40" />
+      <div className="pointer-events-none absolute inset-0 rounded-2xl bg-linear-to-b from-white/20 via-transparent to-transparent opacity-40" />
 
-      <div className="relative flex h-[70px] items-center justify-between px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#3b35c4] shadow-[0_6px_20px_rgba(59,53,196,0.4)] transition group-hover:scale-105">
-            <Briefcase className="h-5 w-5 text-white" />
+      <div className="relative flex h-17.5 items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="group flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary shadow-[0_6px_20px_hsl(var(--primary)/0.35)] transition group-hover:scale-105">
+            <Image
+              src="/HireCore.png"
+              alt="HireCore Logo"
+              width={36}
+              height={36}
+              priority
+            />
           </div>
-          <span className="text-lg font-semibold tracking-tight text-foreground/80 group-hover:text-foreground transition">
-            Hire<span className="text-[#3b35c4]">Core</span>
+
+          <span className="text-lg font-semibold tracking-tight text-nav-foreground/90 transition group-hover:text-nav-foreground">
+            Hire<span className="text-primary">Core</span>
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="relative text-sm font-medium text-foreground/70 hover:text-foreground transition hover:drop-shadow-[0_0_6px_rgba(59,53,196,0.5)]"
+              className="relative text-sm font-medium text-nav-foreground/70 transition hover:text-nav-foreground"
             >
               {link.label}
+
               {isActive(link.href) && (
                 <motion.span
                   layoutId="nav-indicator"
-                  className="absolute -bottom-1 left-0 h-[2px] w-full bg-[#3b35c4]"
+                  className="absolute -bottom-1 left-0 h-0.5 w-full bg-primary"
                 />
               )}
             </Link>
           ))}
+
+          {authenticated && (
+            <Link
+              href="/dashboard"
+              className="relative text-sm font-medium text-nav-foreground/70 transition hover:text-nav-foreground"
+            >
+              Dashboard
+              {isActive("/dashboard") && (
+                <motion.span
+                  layoutId="nav-indicator"
+                  className="absolute -bottom-1 left-0 h-0.5 w-full bg-primary"
+                />
+              )}
+            </Link>
+          )}
         </div>
 
-        {/* Right Side */}
-        <div className="flex items-center gap-3">
-          {/* Theme Toggle */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
+            type="button"
             onClick={toggleTheme}
-            className="relative flex h-9 w-9 items-center justify-center rounded-full bg-muted/70 backdrop-blur-md hover:bg-accent transition"
+            aria-label="Toggle theme"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface-soft text-foreground transition hover:bg-accent hover:text-accent-foreground"
           >
             <Sun
               className={cn(
                 "absolute h-4 w-4 transition-all",
-                theme === "dark" ? "scale-0 rotate-90 opacity-0" : "scale-100"
+                theme === "dark"
+                  ? "scale-0 rotate-90 opacity-0"
+                  : "scale-100 rotate-0 opacity-100",
               )}
             />
+
             <Moon
               className={cn(
                 "absolute h-4 w-4 transition-all",
-                theme === "dark" ? "scale-100" : "scale-0"
+                theme === "dark"
+                  ? "scale-100 rotate-0 opacity-100"
+                  : "scale-0 -rotate-90 opacity-0",
               )}
             />
           </button>
 
-          {user ? (
-            <div className="relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 rounded-full px-2 py-1 transition hover:bg-black/5"
-              >
-                <Avatar className="h-8 w-8 shadow-md">
-                  <AvatarFallback className="bg-[#3b35c4]/90 text-white">
-                    {getInitials(user.email)}
-                  </AvatarFallback>
-                </Avatar>
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 transition-transform duration-300",
-                    userMenuOpen && "rotate-180"
-                  )}
-                />
-              </button>
-
-              {userMenuOpen && (
-                <div className="absolute right-0 mt-3 w-52 rounded-2xl bg-background/95 backdrop-blur-2xl shadow-[0_10px_40px_rgba(0,0,0,0.15)] p-2 overflow-hidden animate-in fade-in zoom-in-95">
-                  {/* Gloss */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-transparent opacity-30" />
-
-                  <div className="relative flex flex-col gap-1">
-                    <Link
-                      href="/profile"
-                      className="px-3 py-2 text-sm rounded-lg transition hover:bg-accent hover:text-foreground"
-                    >
-                      Profile
-                    </Link>
-
-                    <div className="h-px bg-border/50 my-1" />
-
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full text-left px-3 py-2 text-sm rounded-lg text-destructive transition hover:bg-destructive/10"
-                    >
-                      Sign out
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
+          {!loading && !authenticated && (
+            <div className="hidden items-center gap-2 sm:flex">
               <Link href="/auth/login">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="rounded-full px-4 backdrop-blur-md"
+                  className="rounded-full px-4 text-nav-foreground hover:bg-accent hover:text-accent-foreground"
                 >
                   Sign in
                 </Button>
               </Link>
+
               <Link href="/auth/login?mode=signup">
                 <Button
                   size="sm"
-                  className="rounded-full px-5 bg-[#3b35c4] text-white shadow-[0_6px_20px_rgba(59,53,196,0.4)] hover:scale-[1.03] transition"
+                  className="rounded-full bg-primary px-5 text-primary-foreground shadow-[0_6px_20px_hsl(var(--primary)/0.35)] transition hover:scale-[1.03] hover:bg-primary/90"
                 >
                   Get Started
                 </Button>
@@ -187,28 +215,190 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile Toggle */}
-          <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X /> : <Menu />}
-          </button>
+          {!loading && authenticated && (
+            <div ref={userMenuRef} className="relative hidden sm:block">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((open) => !open)}
+                aria-expanded={userMenuOpen}
+                aria-haspopup="menu"
+                className="flex items-center gap-2 rounded-full border border-border bg-surface-soft py-1 pl-1 pr-3 text-sm text-foreground transition hover:bg-accent hover:text-accent-foreground"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary text-xs font-bold text-primary-foreground">
+                    {getInitials(userName)}
+                  </AvatarFallback>
+                </Avatar>
+
+                <span className="hidden max-w-28 truncate font-medium lg:block">
+                  {userName}
+                </span>
+
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 text-muted-foreground transition-transform",
+                    userMenuOpen && "rotate-180",
+                  )}
+                />
+              </button>
+
+              {userMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-border bg-card/95 p-2 text-card-foreground shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-2xl animate-in fade-in zoom-in-95"
+                >
+                  <div className="p-3">
+                    <p className="truncate text-sm font-semibold">
+                      {userName}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {userEmail}
+                    </p>
+                  </div>
+
+                  <div className="my-1 h-px bg-border" />
+
+                  {authedLinks.map((link) => {
+                    const Icon = link.icon;
+
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        role="menuitem"
+                        className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+
+                  <div className="my-1 h-px bg-border" />
+
+                  <button
+                    type="button"
+                    onClick={logout}
+                    role="menuitem"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-destructive transition hover:bg-destructive/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div ref={mobileMenuRef} className="md:hidden">
+            <button
+              type="button"
+              aria-label="Toggle mobile menu"
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface-soft text-foreground transition hover:bg-accent hover:text-accent-foreground"
+            >
+              {menuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </button>
+
+            {menuOpen && (
+              <div className="absolute left-0 right-0 top-[calc(100%+0.75rem)] rounded-2xl border border-border bg-card/95 p-4 text-card-foreground shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-2xl animate-in fade-in zoom-in-95">
+                {authenticated && (
+                  <div className="mb-3 flex items-center gap-3 rounded-2xl border border-border bg-background/70 p-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="bg-primary text-sm font-bold text-primary-foreground">
+                        {getInitials(userName)}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="min-w-0 text-left">
+                      <p className="truncate text-sm font-semibold">
+                        {userName}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {userEmail}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-1">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground",
+                        isActive(link.href)
+                          ? "bg-accent text-accent-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+
+                  {authenticated &&
+                    authedLinks.map((link) => {
+                      const Icon = link.icon;
+
+                      return (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className={cn(
+                            "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-accent hover:text-accent-foreground",
+                            isActive(link.href)
+                              ? "bg-accent text-accent-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          <Icon className="h-4 w-4" />
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+
+                  <div className="my-2 h-px bg-border" />
+
+                  {!loading && !authenticated && (
+                    <>
+                      <Link
+                        href="/auth/login"
+                        className="rounded-xl px-3 py-3 text-sm font-medium text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                      >
+                        Sign in
+                      </Link>
+
+                      <Link
+                        href="/auth/login?mode=signup"
+                        className="rounded-xl bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
+                      >
+                        Get Started
+                      </Link>
+                    </>
+                  )}
+
+                  {!loading && authenticated && (
+                    <button
+                      type="button"
+                      onClick={logout}
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-destructive transition hover:bg-destructive/10"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden border-t bg-background/90 backdrop-blur-xl p-4">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="block py-2 text-sm"
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      )}
     </nav>
   );
 }
